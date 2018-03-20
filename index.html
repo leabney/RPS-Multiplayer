@@ -26,9 +26,9 @@
     </div>
     <form>
         <div class="form-row">
-            <div class="col-sm-6">
+            <div class="col-sm-9">
                 <label for="name">Name</label>
-                <input type="text" class="form-control-text" id="name">
+                <input type="text" class="form-control-text col-sm-9" id="name">
             </div>
             <div class="col">
                 <button id="submit">Submit</button>
@@ -79,8 +79,22 @@
             <div class="panel panel-default chatMessages">
                     <div class="panel-heading chatHeading">Chat</div>
                     <div class="panel-body" id="chatDisplay"></div>
-                     <input type="text" class="form-control-text" id="newMessage" placeholder="New message...">
-                        <button id="send">Send</button>
+                    
+                    <div class="input-group row">
+                            <div class="input-group">
+                                    <input type="text" class="form-control" id="newMessage" placeholder="New message...">
+                                    <span class="input-group-btn">
+                                         <button class="btn btn-default" id="send" type="button">Send</button>
+                                    </span>
+                                 </div>
+                                 </div>
+
+
+                           
+                        
+                    
+                    
+   
             </div>
         </div>
 

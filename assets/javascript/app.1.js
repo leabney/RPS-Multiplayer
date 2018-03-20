@@ -21,6 +21,32 @@ var playersConnect = database.ref("/players");
 var player1Connect = database.ref("/players/1/");
 var player2Connect = database.ref("/players/2/");
 var turnConnect = database.ref("/turn");
+var chatConnect = database.ref("/chat");
+
+
+var userId
+
+//USERS//
+
+firebase.auth().signInAnonymously().catch(function(error) {
+    // Handle Errors here.
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    // ...
+  });
+  
+firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+      userId = (user.uid);
+      console.log(userId);
+    } else {
+        chatConnect.push({
+            name: currentPlayerName,
+            message: "Disconnected"
+        })
+    }
+  });
+
 
 // Player variables //
 var player1 = false;
@@ -39,32 +65,51 @@ var player2Select = "";
 var turn = 0;
 
 var currentPlayer = 0;
+var currentPlayerName = "";
 
 // When submit button is clicked, record user details or display message for too many users//
 $("#submit").click(function () {
     event.preventDefault();
     var name = $("#name").val().trim();
+    currentPlayerName = name;
 
     $("form").hide();
 
     if (player1 !== true) {
+
+       
+
         player1Connect.set({
             name: name,
             wins: 0,
-            losses: 0
+            losses: 0,
+            userid: userId
         });
         currentPlayer = 1;
+
+        console.log(currentPlayer +": " + currentPlayerName);
         $(".message").html("Hi, " + name + "!  You are Player 1. <br> Waiting for an opponent.");
+        chatConnect.push({
+            name: name,
+            message: "connected."
+        });
     }
 
     else if (player1 === true && player2 !== true) {
         player2Connect.set({
             name: name,
             wins: 0,
-            losses: 0
+            losses: 0,
+            userid: userId
         })
 
         currentPlayer = 2;
+        console.log(currentPlayer +": " + currentPlayerName);
+        
+        chatConnect.push({
+            name: name,
+            message: "connected."
+        });
         $(".message").html("Hi, " + name + "!  You are Player 2. <br> Waiting for " + player1Name + " to make a selection.");
 
         firebase.database().ref("turn").update({
@@ -75,6 +120,8 @@ $("#submit").click(function () {
     else if (player1 === true && player2 === true) {
         alert("This game has the maximum number of players.  Please wait until someone disconnects.")
     }
+
+    
 });
 
 // When database players are updated //
@@ -110,10 +157,16 @@ turnConnect.on("value", function (turns) {
 
     if (turn === 1 && currentPlayer === 1) {
         $("#player1Options").show();
-
+        $(".message").html("Hi, " + currentPlayerName + "!  You are Player 1. <br>It's your turn!");
     }
+
+    if (turn===1 && currentPlayer ===2){
+        $(".message").html("Hi, " + player2Name + "!  You are Player 2.  <br>Waiting for "+ player1Name + " to make a selection.");
+    }
+
     if (turn === 2 && currentPlayer === 2) {
         $("#player2Options").show();
+        $(".message").html("Hi, " + currentPlayerName + "!  You are Player 2. <br>It's your turn!");
     }
 
     if (turn === 0) {
@@ -148,10 +201,10 @@ turnConnect.on("value", function (turns) {
             player1Losses++;
             player1Connect.update({
                 losses: player1Losses
-            });            
+            });
         }
-        
-        function next(){
+
+        function next() {
             turnConnect.update({
                 player: 1
             })
@@ -159,7 +212,7 @@ turnConnect.on("value", function (turns) {
             $("#player1Choice").empty();
             $("#player2Choice").empty();
         }
-        setTimeout(next,3000);
+        setTimeout(next, 3000);
     }
 });
 
@@ -180,7 +233,10 @@ $(document).on('click', '.Rock, .Paper, .Scissors', function () {
         turnConnect.update({
             player: 2
         })
-    };
+        $(".message").html("Hi, " + currentPlayerName + "!  You are Player 1. <br>Waiting for " + player2Name + " to make a selection.");
+    }
+
+
 
     if (turn === 2 && currentPlayer === 2) {
         player2Connect.update({
@@ -195,6 +251,25 @@ $(document).on('click', '.Rock, .Paper, .Scissors', function () {
         turnConnect.update({
             player: 0
         })
-    }
+    };
 
 });
+
+$("#send").click(function () {
+    event.preventDefault();
+    var newMessage = $("#newMessage").val().trim();
+    chatConnect.push({
+        name: currentPlayerName,
+        message: newMessage
+    })
+
+    $("#newMessage").val("");
+});
+
+// When chat messages are sent //
+chatConnect.orderByKey().limitToLast(1).on('child_added', function (snapshot) {
+    var addMessage = "<p>" + snapshot.child("/name").val() + ": " + snapshot.child("/message").val() + "</p>";
+    $("#chatDisplay").append(addMessage)
+    $("#chatDisplay").animate({ scrollTop: $('#chatDisplay').prop("scrollHeight") }, 1000);
+});
+
