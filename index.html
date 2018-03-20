@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Rock, Paper, Scissors</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Link to the jQuery Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Link to Bootstrap & stylesheet -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" media="screen" href="assets/css/style.css" />
+
+    <!-- Link to Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+
+</head>
+
+<body>
+    <div class="jumbotron">
+        <h2>Rock Paper Scissors</h2>
+    </div>
+    <form>
+        <div class="form-row">
+            <div class="col-sm-6">
+                <label for="name">Name</label>
+                <input type="text" class="form-control-text" id="name">
+            </div>
+            <div class="col">
+                <button id="submit">Submit</button>
+            </div>
+        </div>
+    </form>
+    <div class="message"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Player 1</div>
+                    <div class="panel-body" id="player1">
+                        <div id="player1Name"></div>
+                        <div id="player1Stats"></div>
+                        <div id="player1Choice"></div>
+                        <div id="player1Options">
+                            <button class="Rock">Rock</button>
+                            <button class="Paper">Paper</button>
+                            <button class="Scissors">Scissors</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Game</div>
+                    <div class="panel-body" id="gameMessage"></div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Player 2</div>
+                    <div class="panel-body" id="player2">
+                        <div id="player2Name"></div>
+                        <div id="player2Stats"></div>
+                        <div id="player2Choice"></div>
+                        <div id="player2Options">
+                            <button class="Rock">Rock</button>
+                            <button class="Paper">Paper</button>
+                            <button class="Scissors">Scissors</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default chatMessages">
+                    <div class="panel-heading chatHeading">Chat</div>
+                    <div class="panel-body" id="chatDisplay"></div>
+                     <input type="text" class="form-control-text" id="newMessage" placeholder="New message...">
+                        <button id="send">Send</button>
+            </div>
+        </div>
+
+        <script src="assets/javascript/app.1.js"></script>
+</body>
+
+</html>

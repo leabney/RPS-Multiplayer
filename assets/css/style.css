@@ -1,0 +1,62 @@
+.jumbotron {
+    background-color:rgb(11, 11, 105);
+    color: white;
+    text-align: center;
+    height: 100px;
+    padding-top: 40px;
+}
+
+.panel-body {
+    border: 1pt solid darkgrey;
+    height: 200px;
+    text-align: center;
+    padding-top: 10px;
+}
+
+.panel-heading {
+    background-color: darkslategray;
+    color: white;
+    text-align: center;
+}
+
+.form-row {
+    text-align: center;
+    margin:0 auto;
+    width: 40%;
+    margin-bottom: 20px;
+}
+
+.message{
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+button{
+    display: block;
+    margin: 0 auto;
+    width: 100px;
+    color: white;
+    background-color:darkslategray;
+    margin-top: 10px;
+}
+
+#gameMessage {
+    padding-top: 25px;
+}
+
+.chatMessages {
+    
+    width: 60%;
+    display: block;
+    margin: 0 auto;
+}
+
+.chatHeading {
+    margin-top: 20px;
+    background-color: rgb(11, 11, 105);
+}
+
+.chatDisplay{
+    border: 1pt solid darkslategrey;
+    height: 60px;
+}
