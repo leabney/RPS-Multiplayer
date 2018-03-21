@@ -1,3 +1,5 @@
+//On start, hide Rock, Paper, Scissors buttons//
+
 $(document).ready(function () {
     $("#player1Options").hide();
     $("#player2Options").hide();
@@ -15,38 +17,14 @@ var config = {
 
 firebase.initializeApp(config);
 
-// Create variables to reference the database //
+// Create variables to easily reference Firebase //
 var database = firebase.database();
 var playersConnect = database.ref("/players");
 var player1Connect = database.ref("/players/1/");
 var player2Connect = database.ref("/players/2/");
 var turnConnect = database.ref("/turn");
 var chatConnect = database.ref("/chat");
-
-
-var userId
-
-//USERS//
-
-firebase.auth().signInAnonymously().catch(function(error) {
-    // Handle Errors here.
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    // ...
-  });
-  
-firebase.auth().onAuthStateChanged(function(user) {
-    if (user) {
-      userId = (user.uid);
-      console.log(userId);
-    } else {
-        chatConnect.push({
-            name: currentPlayerName,
-            message: "Disconnected"
-        })
-    }
-  });
-
+var messageRef = database.ref("/messages");
 
 // Player variables //
 var player1 = false;
@@ -56,16 +34,22 @@ var player1Name = "Waiting";
 var player1Wins = 0;
 var player1Losses = 0;
 var player1Select = "";
+var player1Id = "";
 
 var player2Name = "Waiting";
 var player2Wins = 0;
 var player2Losses = 0;
 var player2Select = "";
+var player2Id = "";
 
 var turn = 0;
 
 var currentPlayer = 0;
 var currentPlayerName = "";
+
+
+
+
 
 // When submit button is clicked, record user details or display message for too many users//
 $("#submit").click(function () {
@@ -76,18 +60,14 @@ $("#submit").click(function () {
     $("form").hide();
 
     if (player1 !== true) {
-
-       
-
         player1Connect.set({
             name: name,
             wins: 0,
-            losses: 0,
-            userid: userId
+            losses: 0
         });
         currentPlayer = 1;
 
-        console.log(currentPlayer +": " + currentPlayerName);
+        console.log(currentPlayer + ": " + currentPlayerName);
         $(".message").html("Hi, " + name + "!  You are Player 1. <br> Waiting for an opponent.");
         chatConnect.push({
             name: name,
@@ -99,13 +79,12 @@ $("#submit").click(function () {
         player2Connect.set({
             name: name,
             wins: 0,
-            losses: 0,
-            userid: userId
+            losses: 0
         })
 
         currentPlayer = 2;
-        console.log(currentPlayer +": " + currentPlayerName);
-        
+        console.log(currentPlayer + ": " + currentPlayerName);
+
         chatConnect.push({
             name: name,
             message: "connected."
@@ -121,8 +100,24 @@ $("#submit").click(function () {
         alert("This game has the maximum number of players.  Please wait until someone disconnects.")
     }
 
-    
+     messageRef.onDisconnect().set({
+       name: currentPlayerName,
+       player: currentPlayer
+     });
+
+     
 });
+
+messageRef.on("value",function (snapshot){
+    if (snapshot.child("/name").val() !==null){
+        chatConnect.push({
+        name: snapshot.child("/name").val(),
+        message: "Disconnected."
+    })    
+    var remove = snapshot.child("/player").val()
+    playersConnect.child("/"+remove).remove();
+}
+ });
 
 // When database players are updated //
 playersConnect.on("value", function (snapshot) {
@@ -133,6 +128,7 @@ playersConnect.on("value", function (snapshot) {
         player1Wins = snapshot.child("/1").child("/wins").val();
         player1Losses = snapshot.child("/1").child("/losses").val();
         player1Select = snapshot.child("/1").child("/choice").val();
+        console.log("Player 1: " + player1Id);
     }
 
     if (snapshot.child("/2").exists()) {
@@ -141,6 +137,7 @@ playersConnect.on("value", function (snapshot) {
         player2Wins = snapshot.child("/2").child("/wins").val();
         player2Losses = snapshot.child("/2").child("/losses").val();
         player2Select = snapshot.child("/2").child("/choice").val();
+        console.log("Player 2: " + player2Id);
     }
 
     $("#player1Name").html("<h3>" + player1Name + "</h3>");
@@ -149,19 +146,21 @@ playersConnect.on("value", function (snapshot) {
     $("#player2Stats").html("Wins: " + player2Wins + "     Losses: " + player2Losses);
 });
 
+
 // When database turns are updated //
 turnConnect.on("value", function (turns) {
 
     turn = turns.child("player").val();
     console.log(turn);
 
+   
     if (turn === 1 && currentPlayer === 1) {
         $("#player1Options").show();
         $(".message").html("Hi, " + currentPlayerName + "!  You are Player 1. <br>It's your turn!");
     }
 
-    if (turn===1 && currentPlayer ===2){
-        $(".message").html("Hi, " + player2Name + "!  You are Player 2.  <br>Waiting for "+ player1Name + " to make a selection.");
+    if (turn === 1 && currentPlayer === 2) {
+        $(".message").html("Hi, " + player2Name + "!  You are Player 2.  <br>Waiting for " + player1Name + " to make a selection.");
     }
 
     if (turn === 2 && currentPlayer === 2) {
