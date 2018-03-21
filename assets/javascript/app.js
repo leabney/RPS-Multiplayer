@@ -55,6 +55,8 @@ $("#submit").click(function () {
     var name = $("#name").val().trim();
     currentPlayerName = name;
 
+    
+
     $("form").hide();
 
     if (player1 !== true) {
@@ -72,6 +74,12 @@ $("#submit").click(function () {
             name: name,
             message: "connected."
         });
+
+        if (players===2){
+            firebase.database().ref("turn").update({
+            player: 1
+       })
+    }
     }
 
     else if (player1 === true && player2 !== true) {
@@ -90,6 +98,11 @@ $("#submit").click(function () {
         });
         $(".message").html("Hi, " + name + "!  You are Player 2. <br> Waiting for " + player1Name + " to make a selection.");
 
+        if (players===2){
+            firebase.database().ref("turn").update({
+            player: 1
+       })
+    }
     }
 
     else if (player1 === true && player2 === true) {
@@ -100,11 +113,8 @@ $("#submit").click(function () {
        name: currentPlayerName,
        player: currentPlayer
      });
-     if (players===2){
-         firebase.database().ref("turn").update({
-         player: 1
-    })
-}
+
+
 });
 
 messageRef.on("value",function (snapshot){
@@ -113,8 +123,16 @@ messageRef.on("value",function (snapshot){
         name: snapshot.child("/name").val(),
         message: "Disconnected."
     })    
+
+    players--
+    
+    turnConnect.set({
+        player: 0
+    })
+
     var remove = snapshot.child("/player").val()
     playersConnect.child("/"+remove).remove();
+
 }
  });
 
@@ -165,7 +183,7 @@ turnConnect.on("value", function (turns) {
     console.log(turn);
     console.log(currentPlayer);
    
-    if (turn === 1 && currentPlayer === 1) {
+    if (turn === 1 && currentPlayer === 1 & players===2) {
         $("#player1Options").show();
         $(".message").html("Hi, " + currentPlayerName + "!  You are Player 1. <br>It's your turn!");
     }
@@ -179,7 +197,12 @@ turnConnect.on("value", function (turns) {
         $(".message").html("Hi, " + currentPlayerName + "!  You are Player 2. <br>It's your turn!");
     }
 
-    if (turn === 0) {
+    if (turn==0 && players!==2){
+        $("#player1Options").hide();
+        $("#player2Options").hide();
+    }
+
+    if (turn === 0 && players===2) {
         $("#player1Choice").html("<h3>" + player1Select + "</h3>");
         $("#player2Choice").html("<h3>" + player2Select + "</h3>");
 
