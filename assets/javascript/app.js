@@ -125,14 +125,15 @@ messageRef.on("value",function (snapshot){
     })    
 
     players--
-    
+
     turnConnect.set({
         player: 0
     })
 
     var remove = snapshot.child("/player").val()
     playersConnect.child("/"+remove).remove();
-
+    $(".message").empty();
+    $(".message").html("Waiting for an opponent.") 
 }
  });
 
